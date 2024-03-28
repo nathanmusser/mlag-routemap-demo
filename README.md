@@ -11,6 +11,7 @@ cd ./avd; source venv_avd/bin/activate
 git clone https://github.com/nathanmusser/mlag-routemap-demo.git
 cd mlag-routemap-demo/
 ansible-playbook build.yml deploy.yml reload.yml
+
 ```
 
 Wait for the devices to reload. 
@@ -22,6 +23,7 @@ Remove
 configure
 router bgp 65101
    no neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
+
 ```
 
 Add
@@ -29,4 +31,5 @@ Add
 configure
 router bgp 65101
    neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
+
 ```
