@@ -8,19 +8,19 @@ all:
             DC1_SPINES:
               hosts:
                 spine1:
-                  ansible_host: 10.18.148.157
+                  ansible_host: 192.168.0.101
                 spine2:
-                  ansible_host: 10.18.148.134
+                  ansible_host: 192.168.0.102
             DC1_L3_LEAVES:
               hosts:
                 agg1:
-                  ansible_host: 10.18.148.155
+                  ansible_host: 192.168.0.111
                 agg2:
-                  ansible_host: 10.18.148.160
+                  ansible_host: 192.168.0.112
             DC1_L2_LEAVES:
               hosts:
                 leaf1:
-                  ansible_host: 10.18.148.114
+                  ansible_host: 192.168.0.121
     NETWORK_SERVICES:
       children:
         DC1_L3_LEAVES:
