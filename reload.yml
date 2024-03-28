@@ -1,0 +1,14 @@
+---
+# reload.yml
+
+- name: Reload all devices
+  hosts: FABRIC
+  gather_facts: false
+  tasks:
+
+    - name: Push reload command
+      arista.eos.eos_command:
+        commands:
+          - command: reload power force
+            sendonly: True
+      ignore_errors: True
