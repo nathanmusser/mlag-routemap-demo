@@ -1,0 +1,98 @@
+hostname: leaf1
+is_deployed: true
+service_routing_protocols_model: multi-agent
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+ip_name_servers:
+- ip_address: 169.254.169.254
+  vrf: default
+spanning_tree:
+  mode: mstp
+  mst_instances:
+  - id: '0'
+    priority: 32768
+local_users:
+- name: admin
+  privilege: 15
+  role: network-admin
+  no_password: true
+- name: ansible
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$7u4j1rkb3VELgcZE$EJt2Qff8kd/TapRoci0XaIZsL4tFzgq1YZBLD9c6f/knXzvcYY0NcMKndZeCv0T268knGKhOEwZAxqKjlMm920
+- name: arista
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$7kJ8fPNkGoUXk2dj$NEXeLjymy1AIoHyLVwnn1Ps81RtbGK7z1DIQ.xyoecnQmDkdnrwitrXl9eDHKePQ.9b6rUg1Ezoi3lTAF2vpw.
+vrfs:
+- name: default
+  ip_routing: false
+management_interfaces:
+- name: Management1
+  description: oob_management
+  shutdown: false
+  vrf: default
+  ip_address: 192.168.0.121/24
+  gateway: null
+  type: oob
+management_api_http:
+  enable_vrfs:
+  - name: default
+  enable_https: true
+ethernet_interfaces:
+- name: Ethernet1
+  peer: agg1
+  peer_interface: Ethernet5
+  peer_type: l3leaf
+  description: AGG1_Ethernet5
+  shutdown: false
+  type: port-channel-member
+  channel_group:
+    id: 1
+    mode: active
+- name: Ethernet2
+  peer: agg2
+  peer_interface: Ethernet5
+  peer_type: l3leaf
+  description: AGG2_Ethernet5
+  shutdown: false
+  type: port-channel-member
+  channel_group:
+    id: 1
+    mode: active
+- name: Ethernet3
+  peer: leaf1-server1
+  peer_interface: et1
+  peer_type: server
+  description: leaf1-server1_et1
+  shutdown: false
+  type: port-channel-member
+  channel_group:
+    id: 3
+    mode: active
+port_channel_interfaces:
+- name: Port-Channel1
+  description: L3_AGG12_Po5
+  type: switched
+  shutdown: false
+  mode: trunk
+  vlans: '11'
+- name: Port-Channel3
+  description: leaf1-server1_PortChannel dc1-leaf1-server1
+  type: switched
+  shutdown: false
+  mode: trunk
+  vlans: '11'
+  native_vlan: 4092
+  spanning_tree_portfast: edge
+vlans:
+- id: 11
+  name: VRF10_VLAN11
+  tenant: Tenant1
+ip_igmp_snooping:
+  globally_enabled: true
+metadata:
+  platform: vEOS-lab

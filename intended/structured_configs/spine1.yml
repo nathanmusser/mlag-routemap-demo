@@ -1,0 +1,143 @@
+hostname: spine1
+is_deployed: true
+router_bgp:
+  as: '65100'
+  router_id: 192.168.200.1
+  bgp:
+    default:
+      ipv4_unicast: false
+  maximum_paths:
+    paths: 4
+    ecmp: 4
+  peer_groups:
+  - name: IPv4-UNDERLAY-PEERS
+    type: ipv4
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+    maximum_routes: 12000
+    send_community: all
+  - name: EVPN-OVERLAY-PEERS
+    type: evpn
+    update_source: Loopback0
+    bfd: true
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+    send_community: all
+    maximum_routes: 0
+    ebgp_multihop: 3
+    next_hop_unchanged: true
+  address_family_ipv4:
+    peer_groups:
+    - name: IPv4-UNDERLAY-PEERS
+      activate: true
+    - name: EVPN-OVERLAY-PEERS
+      activate: false
+  redistribute_routes:
+  - source_protocol: connected
+    route_map: RM-CONN-2-BGP
+  neighbors:
+  - ip_address: 192.168.202.1
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65101'
+    peer: agg1
+    description: agg1_Ethernet1
+  - ip_address: 192.168.202.5
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65101'
+    peer: agg2
+    description: agg2_Ethernet1
+  - ip_address: 192.168.200.3
+    peer_group: EVPN-OVERLAY-PEERS
+    peer: agg1
+    description: agg1
+    remote_as: '65101'
+  - ip_address: 192.168.200.4
+    peer_group: EVPN-OVERLAY-PEERS
+    peer: agg2
+    description: agg2
+    remote_as: '65101'
+  address_family_evpn:
+    peer_groups:
+    - name: EVPN-OVERLAY-PEERS
+      activate: true
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+ip_name_servers:
+- ip_address: 169.254.169.254
+  vrf: default
+spanning_tree:
+  mode: none
+local_users:
+- name: admin
+  privilege: 15
+  role: network-admin
+  no_password: true
+- name: ansible
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$7u4j1rkb3VELgcZE$EJt2Qff8kd/TapRoci0XaIZsL4tFzgq1YZBLD9c6f/knXzvcYY0NcMKndZeCv0T268knGKhOEwZAxqKjlMm920
+- name: arista
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$7kJ8fPNkGoUXk2dj$NEXeLjymy1AIoHyLVwnn1Ps81RtbGK7z1DIQ.xyoecnQmDkdnrwitrXl9eDHKePQ.9b6rUg1Ezoi3lTAF2vpw.
+vrfs:
+- name: default
+  ip_routing: false
+management_interfaces:
+- name: Management1
+  description: oob_management
+  shutdown: false
+  vrf: default
+  ip_address: 192.168.0.101/24
+  gateway: null
+  type: oob
+management_api_http:
+  enable_vrfs:
+  - name: default
+  enable_https: true
+ethernet_interfaces:
+- name: Ethernet1
+  peer: agg1
+  peer_interface: Ethernet1
+  peer_type: l3leaf
+  description: P2P_LINK_TO_AGG1_Ethernet1
+  shutdown: false
+  mtu: 1500
+  type: routed
+  ip_address: 192.168.202.0/31
+- name: Ethernet2
+  peer: agg2
+  peer_interface: Ethernet1
+  peer_type: l3leaf
+  description: P2P_LINK_TO_AGG2_Ethernet1
+  shutdown: false
+  mtu: 1500
+  type: routed
+  ip_address: 192.168.202.4/31
+loopback_interfaces:
+- name: Loopback0
+  description: EVPN_Overlay_Peering
+  shutdown: false
+  ip_address: 192.168.200.1/32
+prefix_lists:
+- name: PL-LOOPBACKS-EVPN-OVERLAY
+  sequence_numbers:
+  - sequence: 10
+    action: permit 192.168.200.0/24 eq 32
+route_maps:
+- name: RM-CONN-2-BGP
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    match:
+    - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+router_bfd:
+  multihop:
+    interval: 300
+    min_rx: 300
+    multiplier: 3
+metadata:
+  platform: vEOS-lab
